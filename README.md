@@ -2,7 +2,7 @@
 Tool for finding ownerless Roblox groups.
 
 ![Screenshot](screenshot.png)
-(server: hetzner EX62-NVMe, proxy provider: awmproxy, threads: 500)
+(server: hetzner ex62-nvme, proxies: awmproxy vip, threads: 500)
 
 
 # Config
