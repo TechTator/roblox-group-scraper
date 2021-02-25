@@ -1,7 +1,9 @@
 {
     "threadCount": 500,
     "displayErrors": false,
-    "minimumMemberCount": 0,
+    "isLooped": false,
+    "webhookUrl": "",
+    "minMemberCount": 0,
     "range": {
         "min": 5000000,
         "max": 10000000

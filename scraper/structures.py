@@ -50,8 +50,8 @@ class ProxyHandler:
     def __enter__(self):
         return self.proxy
 
-    def __exit__(self, x, *_):
-        if not x:
+    def __exit__(self, err, *_):
+        if not err:
             self.pool.alive.append(self.proxy)
 
 class ProxyPool:
