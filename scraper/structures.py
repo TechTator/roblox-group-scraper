@@ -4,6 +4,7 @@ import random
 from itertools import cycle
 from http.client import HTTPSConnection
 
+# should probably replace this with a better approach for counting
 class Counter:
     def __init__(self):
         self.checkpoints = []
