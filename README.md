@@ -9,7 +9,7 @@ Tool for finding ownerless Roblox groups.
 - `threadCount`: amount of threads to be used for scanning
 - `displayErrors`: show errors related to scanning
 - `minimumMemberCount`: groups with member counts below this amount won't be shown
-- `range`: group ids will count up from `min`, up until `max`
+- `range`: group ids will count from `min`, up until `max`
 
 # Output
 Matched groups will be logged into the file `found.csv` with the following fields:
