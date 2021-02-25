@@ -1,6 +1,9 @@
 # roblox-group-scraper
 Tool for finding ownerless Roblox groups.
 
+![Screenshot](screenshot.png)
+
+
 # Config
 - `threadCount`: amount of threads to be used for scanning
 - `displayErrors`: display errors related to scraping
