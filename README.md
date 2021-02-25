@@ -18,8 +18,8 @@ Matched groups will be logged into the file `found.csv` with the following field
 - Name
 
 # Usage
-- Download and install the latest python 3 release from https://www.python.org/downloads/ (while installing, check 'Add to PATH')
+- Download and install the latest Python 3 release from https://www.python.org/downloads/ (while installing, check 'Add to PATH')
 - Download and extract the tool from https://github.com/h0nde/roblox-group-scraper/archive/main.zip
-- Set up config.json to your preference
+- Set up config.json to your preferences
 - Add your HTTP/S proxies to proxies.txt
 - Launch scraper.bat
