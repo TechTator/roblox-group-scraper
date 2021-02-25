@@ -6,7 +6,7 @@ Tool for finding ownerless Roblox groups.
 
 # Config
 - `threadCount`: amount of threads to be used for scanning
-- `displayErrors`: display errors related to scanning
+- `displayErrors`: show errors related to scanning
 - `minimumMemberCount`: groups with member counts below this amount won't be shown
 - `range`: group ids will count up from `min`, up until `max`
 
