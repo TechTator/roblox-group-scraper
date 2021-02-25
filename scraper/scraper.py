@@ -3,6 +3,7 @@ import threading
 import json
 import time
 import os
+import sys
 if os.name == "nt":
     import ctypes
 try:
@@ -17,7 +18,7 @@ with open("config.json") as fp:
     MIN_MEMBER_COUNT = _config.get("minMemberCount")
     IS_LOOPED = _config.get("isLooped", False)
     WEBHOOK_URL = _config.get("webhookUrl")
-    RANGE = _config["range"]
+    RANGE = _config["range"] if len(sys.argv) == 1 else {"min": int(sys.argv[1]), "max": int(sys.argv[2])}
     del _config
 
 with open("proxies.txt") as fp:
