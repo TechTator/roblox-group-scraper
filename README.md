@@ -8,6 +8,8 @@ Tool for finding ownerless Roblox groups.
 # Config
 - `threadCount`: amount of threads to be used for scanning
 - `displayErrors`: show errors related to scanning
+- `isLooped`: scanning will restart from min once it reaches max range
+- `webhookUrl`: found groups will be sent to the specified webhook url via an embed
 - `minimumMemberCount`: groups with member counts below this amount won't be shown
 - `range`: group ids will count from `min`, up until `max`
 
