@@ -4,7 +4,6 @@ import random
 from itertools import cycle
 from http.client import HTTPSConnection
 
-# should probably replace this with a better approach for counting
 class Counter:
     def __init__(self):
         self.checkpoints = []
@@ -56,8 +55,8 @@ class ProxyHandler:
 
 class ProxyPool:
     def __init__(self, proxies):
-        random.shuffle(proxies)
-        self.proxy_iter = cycle(proxies)
+        self.proxies = proxies
+        random.shuffle(self.proxies)
         self.alive = []
         self.lock = threading.Lock()
 
@@ -66,5 +65,5 @@ class ProxyPool:
             if self.alive:
                 proxy = self.alive.pop()
             else:
-                proxy = Proxy(next(self.proxy_iter))
+                proxy = Proxy(self.proxies.pop(0))
             return ProxyHandler(self, proxy)

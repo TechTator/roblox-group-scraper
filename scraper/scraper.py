@@ -4,12 +4,7 @@ import json
 import time
 import os
 import sys
-if os.name == "nt":
-    import ctypes
-try:
-    import requests
-except:
-    requests = None
+import requests
 
 with open("config.json") as fp:
     _config = json.load(fp)
@@ -19,14 +14,9 @@ with open("config.json") as fp:
     IS_LOOPED = _config.get("isLooped", False)
     WEBHOOK_URL = _config.get("webhookUrl")
     RANGE = _config["range"] if len(sys.argv) == 1 else {"min": int(sys.argv[1]), "max": int(sys.argv[2])}
-    del _config
 
 with open("proxies.txt") as fp:
     proxies = ProxyPool(fp.read().splitlines())
-
-if IS_LOOPED and not requests:
-    print("ERROR: isLooped is enabled, but the module 'requests' is not installed.")
-    input()
 
 counter = Counter()
 processed = 0
@@ -109,70 +99,50 @@ def report(group_info):
     with report_lock:
         print(f"[FOUND] Id: {group_info['id']} - Members: {group_info.get('memberCount')} - Name: {group_info['name']}")
 
-        file_exists = os.path.exists("found.csv")
-        with open("found.csv", "a", encoding="UTF-8", errors="ignore") as fp:
+        file_exists = os.path.exists("groups.txt")
+        with open("groups.txt", "a") as fp:
             if not file_exists:
-                fp.write("Id,Member Count,Url,Name\n")
-            fp.write(",".join([
-                str(group_info["id"]),
-                str(group_info.get("memberCount", 0)),
-                f"https://www.roblox.com/groups/{group_info['id']}/--",
-                '"' + group_info["name"] + '"'
-            ]) + "\n")
+                fp.write("group id,group name,member count\n")
+            fp.write(f"{group_info['id']},{group_info['name']},{group_info['memberCount']}\n")
         
+        if WEBHOOK_URL:
+            requests.post(
+                WEBHOOK_URL,
+                json=dict(
+                    embeds=[make_embed(group_info)]
+                )
+            )
         cache[group_info["id"]] = True
 
-    if WEBHOOK_URL:
-        embed = make_embed(group_info)
-        requests.post(
-            url=WEBHOOK_URL,
-            json={"embeds": [embed]}
-        )
+def thread_func():
+    while True:
+        group_id = get_group_id()
+        proxy = proxies.get_proxy()
 
-class StatThread(threading.Thread):
-    def run(self):
-        while True:
-            time.sleep(0.1)
-            try:
-                status = "  |  ".join([
-                    "Progress: %d/%d %s" % (processed, total_count, f"({loop_num})" if IS_LOOPED else ""),
-                    "CPM: %d" % counter.get_cpm()
-                ])
-                if os.name == "nt":
-                    ctypes.windll.kernel32.SetConsoleTitleW(status)
-                else:
-                    print(status)
-            except:
-                pass
+        try:
+            group_info = get_group_info(group_id, proxy)
+            if not group_info:
+                continue
+            report(group_info)
+            counter.increment()
+        except Exception as ex:
+            if DISPLAY_ERRORS:
+                print(f"Error processing group {group_id}: {ex}")
+            proxy.blacklist()
+            continue
+        finally:
+            processed += 1
+            if processed % 1000 == 0:
+                print(f"Processed {processed} of {total_count} in {loop_num} loops")
 
-class Thread(threading.Thread):
-    def run(self):
-        global processed
+if __name__ == "__main__":
+    threads = [
+        threading.Thread(target=thread_func)
+        for i in range(THREAD_COUNT)
+    ]
 
-        while True:
-            try:
-                group_id = get_group_id()
-            except StopIteration:
-                break
+    for thread in threads:
+        thread.start()
 
-            while True:
-                try:
-                    with next(proxies) as proxy:
-                        group_info = get_group_info(group_id, proxy)
-                        if group_info:
-                            report(group_info)
-
-                        processed += 1
-                        counter.add()
-                        break
-                except Exception as err:
-                    if DISPLAY_ERRORS:
-                        print(f"Error while processing {group_id}: {err} ({type(err)})")
-
-def main():
-    StatThread().start()
-    threads = [Thread() for _ in range(THREAD_COUNT)]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
+    for thread in threads:
+        thread.join()
